@@ -29,6 +29,11 @@ class GreetingHttpController {
         }
         return new Greeting("Hello, " + name + "!");
     }
+
+    @GetMapping("/noauth/greetings/")
+    Greeting greet() {
+        return new Greeting("Hello, URL without Authentication!");
+    }
 }
 
 @ControllerAdvice

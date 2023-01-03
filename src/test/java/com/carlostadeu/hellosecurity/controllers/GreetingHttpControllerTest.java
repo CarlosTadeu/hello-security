@@ -49,4 +49,11 @@ class GreetingHttpControllerTest {
         mvc.perform(get("/greetings/C").with(httpBasic("spring", "security")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @WithMockUser
+    void noAuthGreet() throws Exception {
+        mvc.perform(get("/noauth/greetings/"))
+                .andExpect(status().isOk());
+    }
 }
