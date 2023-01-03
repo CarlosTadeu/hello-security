@@ -33,20 +33,20 @@ class GreetingHttpControllerTest {
 
     @Test
     void greetWithRequestPostProcessor() throws Exception {
-        mvc.perform(get("/greetings/C").with(user("user")))
+        mvc.perform(get("/auth/greetings/C").with(user("user")))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser("spring")
     void greetWithAnnotation() throws Exception {
-        mvc.perform(get("/greetings/C"))
+        mvc.perform(get("/auth/greetings/C"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void greetWithHttpBasic() throws Exception {
-        mvc.perform(get("/greetings/C").with(httpBasic("spring", "security")))
+        mvc.perform(get("/auth/greetings/C").with(httpBasic("spring", "security")))
                 .andExpect(status().isOk());
     }
 

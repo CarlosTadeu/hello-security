@@ -21,8 +21,8 @@ public class HelloSecurityApplication {
 @RestController
 class GreetingHttpController {
 
-    @GetMapping("/greetings/{name}")
-    Greeting greet(@PathVariable String name) {
+    @GetMapping("/auth/greetings/{name}")
+    Greeting greetAuth(@PathVariable String name) {
         var good = StringUtils.hasText(name) && Character.isUpperCase(name.charAt(0));
         if (!good) {
             throw new IllegalArgumentException("the name must start with a capital letter");
@@ -30,8 +30,13 @@ class GreetingHttpController {
         return new Greeting("Hello, " + name + "!");
     }
 
+    @GetMapping("/noauth/greetings/{name}")
+    Greeting greetNoAuth(@PathVariable String name) {
+        return new Greeting("Hello, " + name + "!. URL without Authentication");
+    }
+
     @GetMapping("/noauth/greetings/")
-    Greeting greet() {
+    Greeting greetNoAuth() {
         return new Greeting("Hello, URL without Authentication!");
     }
 }
