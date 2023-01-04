@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,16 +33,12 @@ class GreetingHttpControllerTest {
                 .build();
     }
 
+    // Authentication
     @Test
     void greetWithRequestPostProcessor() throws Exception {
-        mvc.perform(get("/auth/greetings/C").with(user("user")))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser("spring")
-    void greetWithAnnotation() throws Exception {
-        mvc.perform(get("/auth/greetings/C"))
+        mvc
+                .perform(get("/auth/greetings/Carlos")
+                        .with(user("user")))
                 .andExpect(status().isOk());
     }
 
@@ -50,6 +48,28 @@ class GreetingHttpControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @WithMockUser()
+    void greetWithAnnotation() throws Exception {
+        mvc.perform(get("/auth/greetings/C"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails("spring")
+    void greetWithUserDetails() throws Exception {
+        mvc.perform(get("/auth/greetings/C"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void greetWithAnonymousUser() throws Exception {
+        mvc.perform(get("/auth/greetings/C"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // No Auth
     @Test
     @WithMockUser
     void noAuthGreet() throws Exception {
