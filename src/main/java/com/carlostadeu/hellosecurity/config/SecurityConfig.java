@@ -1,5 +1,6 @@
 package com.carlostadeu.hellosecurity.config;
 
+import com.carlostadeu.hellosecurity.security.MyPasswordEncoderFactories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,7 +34,7 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return MyPasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
