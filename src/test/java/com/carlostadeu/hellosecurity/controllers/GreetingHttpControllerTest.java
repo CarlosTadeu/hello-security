@@ -35,8 +35,14 @@ class GreetingHttpControllerTest {
 
     // Test Specific Authentications
     @Test
-    void greetWithHttpBasic() throws Exception {
+    void greetWithHttpBasicUser() throws Exception {
         mvc.perform(get("/auth/greetings/Carlos").with(httpBasic("user", "password")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void greetWithHttpBasicAdmin() throws Exception {
+        mvc.perform(get("/auth/greetings/Carlos").with(httpBasic("admin", "password")))
                 .andExpect(status().isOk());
     }
 

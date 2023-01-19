@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -30,16 +32,20 @@ public class SecurityConfig {
     }
 
     @Bean
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
     public UserDetailsService users() {
-        User.UserBuilder users = User.withDefaultPasswordEncoder();
-        UserDetails user = users
+        UserDetails user = User.builder()
                 .username("user")
-                .password("password")
+                .password("{bcrypt}$2a$10$Db/2EkhKMKXKfPYb4nS8WuM33wJ87ysNfxFpWn0ZZt4wSpJvKXCay")
                 .roles("USER")
                 .build();
-        UserDetails admin = users
+        UserDetails admin = User.builder()
                 .username("admin")
-                .password("password")
+                .password("{sha256}72e892a85173e6f6ed104c9aa9319f46b7029dd7e6087af5f1f1ddc471767cb110bf5f45df3c9ff0")
                 .roles("USER", "ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
