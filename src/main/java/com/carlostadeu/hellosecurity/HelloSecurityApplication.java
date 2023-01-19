@@ -4,10 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @SpringBootApplication
 public class HelloSecurityApplication {
@@ -35,7 +39,7 @@ class GreetingHttpController {
         return new Greeting("Hello, " + name + "!. URL without Authentication");
     }
 
-    @GetMapping("/noauth/greetings/")
+    @GetMapping("/noauth/greetings")
     Greeting greetNoAuth() {
         return new Greeting("Hello, URL without Authentication!");
     }
@@ -51,6 +55,20 @@ class ProblemDetailErrorHandlingControllerAdvice {
         request.getAttributeNames().asIterator()
                 .forEachRemaining(attributeName -> log.info("attributeName" + attributeName));
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "the name is invalid");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ProblemDetail onException(MethodArgumentNotValidException ex) {
+
+        // Get the default error messages for invalid fields
+        List<String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
+
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errors.toString());
     }
 }
 

@@ -1,12 +1,15 @@
 package com.carlostadeu.hellosecurity.controllers;
 
+import com.carlostadeu.hellosecurity.config.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -17,7 +20,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GreetingHttpControllerTest {
 
     @Autowired
@@ -33,7 +36,20 @@ class GreetingHttpControllerTest {
                 .build();
     }
 
-    // Authentication
+    // Test Specific Authentications
+    @Test
+    void greetWithHttpBasic() throws Exception {
+        mvc.perform(get("/auth/greetings/Carlos").with(httpBasic("user", "password")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void greetWithWrongHttpBasic() throws Exception {
+        mvc.perform(get("/auth/greetings/Carlos").with(httpBasic("user", "wrongpass")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // Test Authentication Mocks
     @Test
     void greetWithRequestPostProcessor() throws Exception {
         mvc
@@ -43,8 +59,9 @@ class GreetingHttpControllerTest {
     }
 
     @Test
-    void greetWithHttpBasic() throws Exception {
-        mvc.perform(get("/auth/greetings/C").with(httpBasic("spring", "security")))
+    @WithUserDetails()
+    void greetWithHttpBasicAndUserDetails() throws Exception {
+        mvc.perform(get("/auth/greetings/Carlos").with(httpBasic("user", "password")))
                 .andExpect(status().isOk());
     }
 
@@ -56,7 +73,7 @@ class GreetingHttpControllerTest {
     }
 
     @Test
-    @WithUserDetails("spring")
+    @WithUserDetails()
     void greetWithUserDetails() throws Exception {
         mvc.perform(get("/auth/greetings/C"))
                 .andExpect(status().isOk());
@@ -69,11 +86,10 @@ class GreetingHttpControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // No Auth
+    // Test No Auth
     @Test
-    @WithMockUser
     void noAuthGreet() throws Exception {
-        mvc.perform(get("/noauth/greetings/"))
+        mvc.perform(get("/noauth/greetings"))
                 .andExpect(status().isOk());
     }
 }
