@@ -25,6 +25,7 @@ public class HelloSecurityApplication {
 @RestController
 class GreetingHttpController {
 
+    // Authentication API
     @GetMapping("/auth/greetings/{name}")
     Greeting greetAuth(@PathVariable String name) {
         var good = StringUtils.hasText(name) && Character.isUpperCase(name.charAt(0));
@@ -34,14 +35,15 @@ class GreetingHttpController {
         return new Greeting("Hello, " + name + "!");
     }
 
-    @GetMapping("/noauth/greetings/{name}")
-    Greeting greetNoAuth(@PathVariable String name) {
-        return new Greeting("Hello, " + name + "!. URL without Authentication");
+    @GetMapping("/customauth/greetings/{name}")
+    Greeting greetCustomAuth(@PathVariable String name) {
+        return new Greeting("Hello, " + name + "!. URL with custom authentication");
     }
 
+    // No Auth API
     @GetMapping("/noauth/greetings")
     Greeting greetNoAuth() {
-        return new Greeting("Hello, URL without Authentication!");
+        return new Greeting("Hello, URL without Authentication");
     }
 }
 

@@ -35,6 +35,14 @@ class GreetingHttpControllerTest {
 
     // Test Specific Authentications
     @Test
+    void greetWithCustomAuth() throws Exception {
+        mvc.perform(get("/customauth/greetings/Carlos")
+                        .header("Api-Key", "custom")
+                        .header("Api-Secret", "password"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void greetWithHttpBasicUser() throws Exception {
         mvc.perform(get("/auth/greetings/Carlos").with(httpBasic("user", "password")))
                 .andExpect(status().isOk());
